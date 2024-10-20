@@ -8,9 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,7 +42,16 @@ public class AuthController {
 		);
 
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
-		return jwtUtil.generateToken(userDetails.getUsername());
+		// Lấy danh sách vai trò từ UserDetails
+		List<String> roles = new ArrayList<>();
+		for (GrantedAuthority authority : userDetails.getAuthorities()) {
+			roles.add(authority.getAuthority());
+		}
+		System.out.println("User authorities: " + userDetails.getAuthorities());
+
+		// Tạo token với username và vai trò
+		String jwtToken = jwtUtil.generateToken(userDetails.getUsername(), roles);
+		return jwtUtil.generateToken(userDetails.getUsername(), roles);
 	}
 
 	@PostMapping("/register")

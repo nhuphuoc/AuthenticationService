@@ -3,12 +3,15 @@ package org.example.authentication.service.impl;
 import org.example.authentication.entities.User;
 import org.example.authentication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -22,6 +25,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (user == null) {
 			throw new UsernameNotFoundException("User not found");
 		}
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+		List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
+		for (String role : user.getRoles()) {
+			GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role);
+			grantedAuthorityList.add(grantedAuthority);
+		}
+		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorityList);
 	}
 }

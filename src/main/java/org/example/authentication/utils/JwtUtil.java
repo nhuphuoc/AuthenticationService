@@ -5,20 +5,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Component
 public class JwtUtil {
 
-	private final String SECRET_KEY = "phuoc_123"; // Use a more secure key in production
+	private final String SECRET_KEY = "your_secret_key"; // Thay thế bằng khóa bí mật của bạn
 	private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
-	public String generateToken(String username) {
-		Map<String, Object> claims = new HashMap<>();
+	public String generateToken(String username, List<String> roles) {
 		return Jwts.builder()
-						.setClaims(claims)
 						.setSubject(username)
+						.claim("roles", roles) // Thêm vai trò vào token
 						.setIssuedAt(new Date(System.currentTimeMillis()))
 						.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 						.signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -30,6 +28,10 @@ public class JwtUtil {
 		return (extractedUsername.equals(username) && !isTokenExpired(token));
 	}
 
+	public List extractRoles(String token) {
+		Claims claims = extractAllClaims(token);
+		return claims.get("roles", List.class); // Lấy danh sách vai trò từ token
+	}
 	public String extractUsername(String token) {
 		return extractAllClaims(token).getSubject();
 	}
