@@ -1,5 +1,6 @@
 package org.example.authentication.controller;
 
+import org.example.authentication.entities.Role;
 import org.example.authentication.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ public class TestController {
 		if (jwtUtil.validateToken(jwtToken, jwtUtil.extractUsername(jwtToken))) {
 			// Lấy vai trò từ token
 			List<String> roles = jwtUtil.extractRoles(jwtToken);
-			if (roles.contains("USER")) {
-				return ResponseEntity.ok("Hello User " + jwtUtil.extractUsername(jwtToken));
+			if (roles.contains(Role.USER.toString())) {
+				return ResponseEntity.ok("Hello User: " + jwtUtil.extractUsername(jwtToken));
 			} else {
 				return ResponseEntity.status(403).body("Forbidden: Insufficient permissions");
 			}
@@ -41,8 +42,8 @@ public class TestController {
 		if (jwtUtil.validateToken(jwtToken, jwtUtil.extractUsername(jwtToken))) {
 			// Lấy vai trò từ token
 			List<String> roles = jwtUtil.extractRoles(jwtToken);
-			if (roles.contains("ADMIN")) {
-				return ResponseEntity.ok("Hello ADMIN + " + jwtUtil.extractUsername(jwtToken));
+			if (roles.contains(Role.ADMIN.toString())) {
+				return ResponseEntity.ok("Hello ADMIN: " + jwtUtil.extractUsername(jwtToken));
 			} else {
 				return ResponseEntity.status(403).body("Forbidden: Insufficient permissions");
 			}

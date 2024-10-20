@@ -1,5 +1,6 @@
 package org.example.authentication.service.impl;
 
+import org.example.authentication.entities.Role;
 import org.example.authentication.entities.User;
 import org.example.authentication.repository.UserRepository;
 import org.example.authentication.service.AuthService;
@@ -27,7 +28,7 @@ public class AuthServiceImp implements AuthService {
 		User user = new User();
 		user.setUsername(username);
 		user.setPassword(passwordEncoder.encode(password));
-		user.setRoles(Collections.singletonList("USER")); // Gán vai trò mặc định
+		user.setRoles(Collections.singletonList(String.valueOf(Role.USER))); // Gán vai trò mặc định
 
 		return userRepository.save(user);
 	}

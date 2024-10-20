@@ -4,6 +4,8 @@ import org.example.authentication.dto.request.AuthRequest;
 import org.example.authentication.dto.request.RegisterRequest;
 import org.example.authentication.service.impl.AuthServiceImp;
 import org.example.authentication.utils.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,11 +16,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
 	private final AuthServiceImp authServiceImp;
 	private AuthenticationManager authenticationManager;
@@ -36,7 +41,8 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public String login(@RequestBody AuthRequest authRequest) {
+	public Map<String, String> login(@RequestBody AuthRequest authRequest) {
+		Map<String, String> result = new HashMap<>();
 		authenticationManager.authenticate(
 						new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
 		);
@@ -51,7 +57,8 @@ public class AuthController {
 
 		// Tạo token với username và vai trò
 		String jwtToken = jwtUtil.generateToken(userDetails.getUsername(), roles);
-		return jwtUtil.generateToken(userDetails.getUsername(), roles);
+		result.put("access_token", jwtToken);
+		return result;
 	}
 
 	@PostMapping("/register")
